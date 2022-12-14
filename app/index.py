@@ -1,10 +1,9 @@
-from app import app, dao
-from app.admin import *
-from  flask import render_template
-from flask import render_template, request, redirect, session, jsonify
-import cloudinary.uploader
+from flask import render_template, request, redirect
+from app import dao, app, login
 from flask_login import login_user, logout_user, current_user
 from app.decorators import annonymous_user
+from app.admin import *
+
 
 
 
@@ -35,16 +34,7 @@ def register():
     return render_template('register.html', err_msg=err_msg)
 
 
-@app.route('/login-admin', methods=['post'])
-def admin_login():
-    username = request.form['username']
-    password = request.form['password']
 
-    user = dao.auth_user(username=username, password=password)
-    if user:
-        login_user(user=user)
-
-    return redirect('/admin')
 
 @app.route('/book_flight/')
 def book_flight():
@@ -53,23 +43,33 @@ def book_flight():
 
 
 
+@app.route('/login-admin', methods=['post'])
+def admin_login():
+    username = request.form['username']
+    password = request.form['password']
+    user = dao.auth_user(username=username, password=password)
+    if user:
+        login_user(user=user)
+    return redirect('/admin')
 
 @app.route('/login/', methods=['get', 'post'])
-def login():
+def login_index():
+
     if request.method.__eq__('POST'):
         username = request.form['username']
         password = request.form['password']
         user = dao.auth_user(username=username, password=password)
         if user:
-            login_user(user=user)
-            return redirect('/')
+                login_user(user=user)
+                return redirect('/admin')
 
     return render_template('login.html')
 
 
-@app.route('/login', methods=['get', 'post'])
+@app.route('/user-login/', methods=['get', 'post'])
 @annonymous_user
 def login_my_user():
+    err=''
     if request.method.__eq__('POST'):
         username = request.form['username']
         password = request.form['password']
@@ -78,8 +78,12 @@ def login_my_user():
             login_user(user=user)
             return redirect('/')
 
+
     return render_template('login.html')
 
+
+
+@login.user_loader
 def load_user(user_id):
     return dao.get_user_by_id(user_id)
 

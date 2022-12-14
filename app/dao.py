@@ -22,6 +22,12 @@ def load_passenger(fl_id=None, kw=None):
 def get_flight_by_id(fl_id):
     return Flight.query.get(fl_id)
 
+def auth_user(username, password):
+    password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
+
+    return User.query.filter(User.username.__eq__(username.strip()),
+                             User.password.__eq__(password)).first()
+
 
 def register(name, username, password, avatar):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())

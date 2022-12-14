@@ -8,30 +8,24 @@ from app.decorators import annonymous_user
 
 
 
-
-
 @app.route('/')
 def home():
     flights = dao.load_flight()
     return render_template('index.html', flights = flights)
 
 
-@app.route('/register/')
+
+@app.route('/register/',methods=['get', 'post'])
 def register():
     err_msg = ''
     if request.method.__eq__('POST'):
         password = request.form['password']
         confirm = request.form['confirm']
         if password.__eq__(confirm):
-            avatar = ''
-            if request.files:
-                res = cloudinary.uploader.upload(request.files['avatar'])
-                avatar = res['secure_url']
-
             try:
                 dao.register(name=request.form['name'],
                              username=request.form['username'],
-                             password=password, avatar=avatar)
+                             password=password)
                 return redirect('/login/')
             except:
                 err_msg = 'Hệ thống đang có lỗi! Vui lòng quay lại sau!'

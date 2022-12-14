@@ -29,8 +29,8 @@ def auth_user(username, password):
                              User.password.__eq__(password)).first()
 
 
-def register(name, username, password, avatar):
+def register(name, username, password):
     password = str(hashlib.md5(password.strip().encode('utf-8')).hexdigest())
-    u = User(name=name, username=username.strip(), password=password, avatar=avatar)
+    u = User(name=name, username=username.strip(), password=password)
     db.session.add(u)
     db.session.commit()

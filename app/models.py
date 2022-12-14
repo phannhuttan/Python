@@ -55,7 +55,6 @@ class User(BaseModel, UserMixin):
     name = Column(String(50), nullable=False)
     username = Column(String(50), nullable=False)
     password = Column(String(50), nullable=False)
-    avatar = Column(String(100), nullable=False)
     active = Column(Boolean, default=True)
     user_role = Column(Enum(UserRole), default=UserRole.USER)
 
@@ -82,30 +81,30 @@ if __name__ == '__main__':
         #                last_name='Tan',
         #                gender='nam',
         #                flight_id=6)
-        #
+
         # db.session.add_all([p1, p2, p3])
         # db.session.commit()
-        #
-        # f1=Flight(name ='jet' ,image='static/image/1.jpg' ,seats=500, departure ='HCM' ,destination ='HaNoi' , price =1000000,
-        #         )
-        # f2=Flight(name ='bambo' ,image='static/image/2.jpg' ,seats=40, departure ='DongThap' ,destination ='USA' , price =23000000
-        #           )
-        # f3=Flight(name ='vietnam airlines' ,image='static/image/3.jpg' ,seats=700, departure ='HCM' ,destination ='CanTho' , price =1000000
-        #          )
-        # f4=Flight(name ='vietnam airlines' ,image='static/image/3.jpg' ,seats=700, departure ='HCM' ,destination ='CanTho' , price =1000000
-        #       )
-        # f5=Flight(name ='bambo' ,image='static/image/2.jpg' ,seats=40, departure ='DongThap' ,destination ='USA' , price =23000000
-        #           )
-        # f6=Flight(name ='jet' ,image='static/image/1.jpg' ,seats=500, departure ='HCM' ,destination ='HaNoi' , price =1000000
-        # )
-        #
-        # db.session.add_all([f1,f2,f3,f4,f5])
-        # db.session.commit()
+
+        f1=Flight(name ='jet' ,image='static/image/1.jpg' ,seats=500, departure ='HCM' ,destination ='HaNoi' , price =1000000,
+                )
+        f2=Flight(name ='bambo' ,image='static/image/2.jpg' ,seats=40, departure ='DongThap' ,destination ='USA' , price =23000000
+                  )
+        f3=Flight(name ='vietnam airlines' ,image='static/image/3.jpg' ,seats=700, departure ='HCM' ,destination ='CanTho' , price =1000000
+                 )
+        f4=Flight(name ='vietnam airlines' ,image='static/image/3.jpg' ,seats=700, departure ='HCM' ,destination ='CanTho' , price =1000000
+              )
+        f5=Flight(name ='bambo' ,image='static/image/2.jpg' ,seats=40, departure ='DongThap' ,destination ='USA' , price =23000000
+                  )
+        f6=Flight(name ='jet' ,image='static/image/1.jpg' ,seats=500, departure ='HCM' ,destination ='HaNoi' , price =1000000
+        )
+
+        db.session.add_all([f1,f2,f3,f4,f5,f6])
+        db.session.commit()
+
         import hashlib
         password = str(hashlib.md5('123456'.encode('utf-8')).digest())
         u = User(name='thanh', username='admin', password=password,
-                 user_role=UserRole.ADMIN,
-                 avatar='https://res.cloudinary.com/dxxwcby8l/image/upload/v1647248722/r8sjly3st7estapvj19u.jpg')
+                 user_role=UserRole.ADMIN)
         db.session.add(u)
         db.session.commit()
 

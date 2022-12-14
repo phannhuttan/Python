@@ -1,0 +1,36 @@
+{% extends 'layout/base.html' %}
+{% block content %}
+<form class="form-inline my-2 my-lg-0" method="post" action="view_available_flights" role="form">
+    <div class="form-group">
+    <input class="form-control mr-sm-2" placeholder="Source" name="source" type="text">
+    <input class="form-control mr-sm-2" placeholder="Destination" name="destination" type="text">
+    <button class="btn btn-secondary my-2 my-sm-0" type="submit" style="margin-right:10px;">View All Available Flights</button>
+    </div>
+</form>
+{% if flights %}
+<div class="row">
+    {% for f in flights %}
+    <div class="col-md-3 col-sm-12" style="padding:1rem;">
+        <div class="card">
+            <img class="card-img-top style="height=350px"; src="{{ f.image }}" alt="{{ f.name }}">
+            <div class="card-body">
+                <h4 class="card-title">{{ f.name }}</h4>
+                 <h4 class=>{{ f.departure }} - {{ f.destination }}</h4>
+                <p class="card-text">{{ "{:,.1f}".format(f.price) }} VNĐ</p>
+                <a href="/flights/{{f.id}}" class="btn btn-primary">Xem chi tiết</a>
+                <a href="/book_flight/{{f.id}}" class="btn btn-danger">Đăt Vé</a>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<p class="text-danger">Không có sản phẩm nào!</p>
+{% endif %}
+<form class="form-inline my-2 my-lg-0" method="post" action="{view_booking" role="form">
+  <input class="form-control mr-sm-2" placeholder="Enter PNR" name="pnr" type="text">
+  <button class="btn btn-secondary my-2 my-sm-0" type="submit" style="margin-right:10px;">View My Booking</button>
+    {% if error_message_booking %}<p><strong>{{ error_message_booking }}</strong></p>{% endif %}
+</form>
+{% endblock %}
+

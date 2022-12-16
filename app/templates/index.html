@@ -15,10 +15,10 @@
             <img class="card-img-top style="height=350px"; src="{{ f.image }}" alt="{{ f.name }}">
             <div class="card-body">
                 <h4 class="card-title">{{ f.name }}</h4>
-                 <h4 class=>{{ f.departure }} - {{ f.destination }}</h4>
-                <p class="card-text">{{ "{:,.1f}".format(f.price) }} VNĐ</p>
-                <a href="/flights/{{f.id}}" class="btn btn-primary">Xem chi tiết</a>
-                <a href="/book_flight/{{f.id}}" class="btn btn-danger">Đăt Vé</a>
+                 <h4 class=>{{ f.departing_at }}</h4>
+                <p class="card-text">{{ f.arriving_at }}</p>
+                <a href="" class="btn btn-primary">Xem chi tiết</a>
+                <a href="" class="btn btn-danger">Đăt Vé</a>
             </div>
         </div>
     </div>

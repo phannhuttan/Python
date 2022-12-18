@@ -15,9 +15,7 @@ app.add_url_rule('/booking', 'booking', controller.booking)
 app.add_url_rule('/api/booking', 'load-flight', controller.load_flights)
 app.add_url_rule('/booking_staff', 'booking_staff', controller.booking_staff)
 app.add_url_rule('/flight/<flight_id>', 'detail', controller.details)
-app.add_url_rule('/api/detail', 'confirm_booking', controller.confirm)
 app.add_url_rule('/search_booking', 'search_booking', controller.search_booking)
-app.add_url_rule('/cart', 'cart', controller.cart)
 app.add_url_rule('/api/pay', 'pay', controller.pay)
 
 

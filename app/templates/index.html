@@ -1,12 +1,6 @@
 {% extends 'layout/base.html' %}
 {% block content %}
-<form class="form-inline my-2 my-lg-0" method="post" action="view_available_flights" role="form">
-    <div class="form-group">
-    <input class="form-control mr-sm-2" placeholder="Source" name="source" type="text">
-    <input class="form-control mr-sm-2" placeholder="Destination" name="destination" type="text">
-    <button class="btn btn-secondary my-2 my-sm-0" type="submit" style="margin-right:10px;">View All Available Flights</button>
-    </div>
-</form>
+
 {% if flights %}
 <div class="row">
     {% for f in flights %}
@@ -17,8 +11,7 @@
                 <h4 class="card-title">{{ f.name }}</h4>
                  <h4 class=>{{ f.departing_at }}</h4>
                 <p class="card-text">{{ f.arriving_at }}</p>
-                <a href="" class="btn btn-primary">Xem chi tiết</a>
-                <a href="" class="btn btn-danger">Đăt Vé</a>
+                <a href="/flight/{ flight_id }" class="btn btn-primary">Xem chi tiết</a>
             </div>
         </div>
     </div>
@@ -27,10 +20,6 @@
 {% else %}
 <p class="text-danger">Không có sản phẩm nào!</p>
 {% endif %}
-<form class="form-inline my-2 my-lg-0" method="post" action="{view_booking" role="form">
-  <input class="form-control mr-sm-2" placeholder="Enter PNR" name="pnr" type="text">
-  <button class="btn btn-secondary my-2 my-sm-0" type="submit" style="margin-right:10px;">View My Booking</button>
-    {% if error_message_booking %}<p><strong>{{ error_message_booking }}</strong></p>{% endif %}
-</form>
+
 {% endblock %}
 

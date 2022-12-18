@@ -4,13 +4,12 @@ from flask_login import login_user, logout_user, login_required
 from app.decorators import anonymous_user
 from app.models import *
 
-
+#hiển thị flight
 def index():
-    airports = dao.load_airports()
     flight = dao.load_flights()
-    return render_template('index.html', airports=airports, flights=flight)
+    return render_template('index.html', flights=flight)
 
-
+#đăng nhập user
 def login_my_user():
     err_msg = ""
     if request.method == "POST":
@@ -23,7 +22,7 @@ def login_my_user():
             if user.user_role == UserRole.ADMIN:
                 return redirect('/admin')
             if user.user_role == UserRole.EMPLOYEE:
-                return redirect('/staff')
+                return redirect('/admin ')
 
             return redirect(url_for("index"))
         else:
@@ -32,22 +31,13 @@ def login_my_user():
     return render_template("login.html", err_msg=err_msg)
 
 
-def login_staff():
-    username = request.form['username']
-    password = request.form['password']
 
-    user = dao.auth_user(username=username, password=password)
-    if user:
-        login_user(user=user)
-
-    return redirect('/staff')
-
-
+#đăng xuất
 def logout_my_user():
     logout_user()
     return redirect(url_for("index"))
 
-
+#đăng ký
 def register():
     err_msg = ''
     if request.method.__eq__('POST'):
@@ -59,7 +49,7 @@ def register():
                 dao.register(name=request.form['name'],
                              username=request.form['username'],
                              password=password)
-                return redirect('/')
+                return redirect('/login')
             except:
                 err_msg = 'Hệ thống đang có lỗi! Vui lòng quay lại sau!'
         else:
@@ -67,7 +57,7 @@ def register():
 
     return render_template('register.html', err_msg=err_msg)
 
-
+#đặt vé
 def booking():
     session['ticket'] = {
         "1": {
@@ -100,7 +90,14 @@ def booking():
 
     return render_template('booking.html', airports=airports, flights=flights, flights_num=flights_num)
 
-
+def search_booking():
+    airports = dao.load_airports()
+    airlines = dao.load_airlines()
+    airplanes = dao.load_airplanes()
+    flights = dao.load_flights()
+    tickets = dao.load_tickets()
+    return render_template('search_booking.html', airports=airports, airlines=airlines,
+                           airplanes=airplanes, flights=flights, tickets=tickets)
 # def search_result():
 #     if request.method == 'POST':
 #         password = request.form['password']
@@ -145,8 +142,8 @@ def booking_staff():
         }
     }
     airports = dao.load_airports()
-    # from_airports = dao.load_from_airlines(airport_id=request.args.get("airport_id"),
-    #                                        kw=request.args.get('keyword'))
+    from_airports = dao.load_from_airlines(airport_id=request.args.get("airport_id"),
+                                           kw=request.args.get('keyword'))
     return render_template('booking_staff.html', airports=airports)
 
 
@@ -155,19 +152,8 @@ def from_airport(from_airport_id):
     return render_template('index.html', airline=f)
 
 
-def search_booking():
-    airports = dao.load_airports()
-    airlines = dao.load_airlines()
-    airplanes = dao.load_airplanes()
-    flights = dao.load_flights()
-    tickets = dao.load_tickets()
-    return render_template('confirm_booking.html', airports=airports, airlines=airlines,
-                           airplanes=airplanes, flights=flights, tickets=tickets)
 
 
-# def booking_ticket(airline_id):
-#     a = dao.get_airline_by_id(airline_id)
-#     return render_template('details.html', airline=a)
 
 
 def details(flight_id):
@@ -176,77 +162,77 @@ def details(flight_id):
     return render_template('detail.html', flight=f, Flight_AirportMedium=m)
 
 
-def confirm(flight_id):
-    f = dao.get_flight_by_id(flight_id)
-    m = dao.get_apm_by_flight_id(flight_id)
-    r = int(request.form.get('rank'))
-    infant = int(request.form.get('infant'))
-    amount = 0
-    seats = []
-    try:
-        adult = int(request.form.get('adult'))
-        children = int(request.form.get('children'))
-        amount = adult+children+infant
-    except:
-        adult = children = 0
-    if amount >= dao.ts(flight_id):
-        for i in range(amount):
-            seats.append(dao.seat(flight_id))
+# def confirm(flight_id):
+#     f = dao.get_flight_by_id(flight_id)
+#     m = dao.get_apm_by_flight_id(flight_id)
+#     r = int(request.form.get('rank'))
+#     infant = int(request.form.get('infant'))
+#     amount = 0
+#     seats = []
+#     try:
+#         adult = int(request.form.get('adult'))
+#         children = int(request.form.get('children'))
+#         amount = adult+children+infant
+#     except:
+#         adult = children = 0
+#     if amount >= dao.ts(flight_id):
+#         for i in range(amount):
+#             seats.append(dao.seat(flight_id))
+#
+#
+#     return render_template('confirm_booking.html', flight=f, Flight_AirportMedium=m,seats=seats)
 
 
-    return render_template('confirm_booking.html', flight=f, Flight_AirportMedium=m,seats=seats)
+# def cart():
+#     # session['cart'] = {
+#     #     "1": {
+#     #         "id": "1",
+#     #         "name": "Saki Guen",
+#     #         "from": "Hà Nội",
+#     #         "to": "Nhật Bản",
+#     #         "rank": "2",
+#     #         "fdate": "11/12/2022",
+#     #         "price": 1500000,
+#     #         "seat": "G1"
+#     #     },
+#     #     "2": {
+#     #         "id": "2",
+#     #         "name": "Nhi Nguyen",
+#     #         "from": "Hồ Chí Minh",
+#     #         "to": "Thái Lan",
+#     #         "rank": "1",
+#     #         "fdate": "11/12/2022",
+#     #         "price": 1500000,
+#     #         "seat": "G2"
+#     #     }
+#     # }
+#
+#     return render_template('cart.html')
 
 
-def cart():
-    # session['cart'] = {
-    #     "1": {
-    #         "id": "1",
-    #         "name": "Saki Guen",
-    #         "from": "Hà Nội",
-    #         "to": "Nhật Bản",
-    #         "rank": "2",
-    #         "fdate": "11/12/2022",
-    #         "price": 1500000,
-    #         "seat": "G1"
-    #     },
-    #     "2": {
-    #         "id": "2",
-    #         "name": "Nhi Nguyen",
-    #         "from": "Hồ Chí Minh",
-    #         "to": "Thái Lan",
-    #         "rank": "1",
-    #         "fdate": "11/12/2022",
-    #         "price": 1500000,
-    #         "seat": "G2"
-    #     }
-    # }
-
-    return render_template('cart.html')
-
-
-def add_to_cart():
-    data = request.json
-
-    id = str(data['id'])
-    name = data['name']
-    price = data['price']
-
-    key = app.config['CART_KEY']
-    cart = session.get(key, {})
-
-    if id in cart:
-        cart[id]['quantity'] += 1
-    else:
-        cart[id] = {
-            "id": id,
-            "name": name,
-            "price": price,
-            "quantity": 1
-        }
-
-    session[key] = cart
-
-    return jsonify(dao.cart_stats(cart))
+# def add_to_cart():
+#     data = request.json
+#
+#     id = str(data['id'])
+#     name = data['name']
+#     price = data['price']
+#
+#     key = app.config['CART_KEY']
+#     cart = session.get(key, {})
+#
+#     if id in cart:
+#         cart[id]['quantity'] += 1
+#     else:
+#         cart[id] = {
+#             "id": id,
+#             "name": name,
+#             "price": price,
+#             "quantity": 1
+#         }
+#
+#     session[key] = cart
+#
+#     return jsonify(dao.cart_stats(cart))
 
 
 # def update_cart(product_id):

@@ -10,7 +10,7 @@ from flask_wtf import FlaskForm
 from wtforms import SelectField, StringField, DateTimeLocalField
 from wtforms.validators import InputRequired, Length
 
-from app import dao,controller
+from app import dao, controller
 
 from app.models import *
 from flask_admin.contrib.sqla import ModelView
@@ -27,6 +27,12 @@ class Base_View(ModelView):
     page_size = 10
 
 
+class AuthenticatedFlight(Base_View):
+    def is_accessible(self):
+        return current_user.is_authenticated and current_user.user_role == UserRole.EMPLOYEE \
+               or current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
+
+
 class AuthenticatedModelView(Base_View):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.user_role == UserRole.ADMIN
@@ -41,7 +47,7 @@ class RegulationView(AuthenticatedModelView):
     details_modal = True
     edit_modal = True
     can_delete = False
-    form_excluded_columns = ['regulations','tickets']
+    form_excluded_columns = ['regulations', 'tickets']
     column_filters = ['name', 'description']
     column_searchable_list = ['name', 'description']
     column_labels = {
@@ -63,7 +69,7 @@ class FlightForm(FlaskForm):
     airlines = SelectField('airlines', choices=[])
 
 
-class FlightManagementView(AuthenticatedModelView):
+class FlightManagementView(AuthenticatedFlight):
     column_filters = ['name', 'id']
     column_searchable_list = ['name', 'id']
     column_labels = {
@@ -125,13 +131,13 @@ class FlightManagementView(AuthenticatedModelView):
                             am_des = request.form[str_des]
                             am_ap = request.form[str_ap]
                             am_msg = dao.check_stop_station(am_name, am_stb,
-                                                              am_stf, airline,
-                                                              am_ap, id, list_stop_regulation)
+                                                            am_stf, airline,
+                                                            am_ap, id, list_stop_regulation)
                             if am_msg == 'success':
                                 try:
                                     dao.save_airport_medium(am_name, am_stb,
-                                                              am_stf, am_des,
-                                                              id, am_ap, list_stop_regulation)
+                                                            am_stf, am_des,
+                                                            id, am_ap, list_stop_regulation)
                                 except:
                                     dao.del_flight(id)
                                     am_msg = 'Đã có lỗi xảy ra khi lưu sân bay trung gian! Vui lòng quay lại sau!'
@@ -139,11 +145,10 @@ class FlightManagementView(AuthenticatedModelView):
                                 dao.del_flight(id)
                                 am_msg = am_msg
 
-
                 form.id.data = ""
                 form.name.data = ""
 
-        return self.render('admin/flight.html', form=form,list_regulation=list_regulation,
+        return self.render('admin/flight.html', form=form, list_regulation=list_regulation,
                            sts_msg=sts_msg, am_msg=am_msg,
                            list_stop_regulation=list_stop_regulation, return_url=return_url)
 
@@ -236,7 +241,7 @@ class FlightManagementView(AuthenticatedModelView):
                             am_edit_msg = 'success'
 
                             if am_edit_stb != medium_list[i].stop_time_begin or \
-                                am_edit_stf != medium_list[i].stop_time_finish:
+                                    am_edit_stf != medium_list[i].stop_time_finish:
                                 am_edit_msg = dao.check_time_stop(am_edit_stb, am_edit_stf, model.id, stop_reg)
 
                             if am_edit_ap != medium_list[i].airports.name or airline != old_airline:
@@ -250,18 +255,17 @@ class FlightManagementView(AuthenticatedModelView):
                                     )
                                 except:
                                     dao.update_flight(model, old_model.id, old_model.name,
-                                                        old_model.departing_at, old_model.arriving_at,
-                                                        old_model.plane_id, old_airline)
+                                                      old_model.departing_at, old_model.arriving_at,
+                                                      old_model.plane_id, old_airline)
                                     am_edit_msg = 'Đã có lỗi xảy ra khi cập nhật trạm dừng! Vui lòng quay lại sau!'
                             else:
                                 try:
                                     dao.update_flight(model, old_model.id, old_model.name,
-                                                        old_model.departing_at, old_model.arriving_at,
-                                                        old_model.plane_id, old_airline)
+                                                      old_model.departing_at, old_model.arriving_at,
+                                                      old_model.plane_id, old_airline)
                                 except:
                                     sts_msg = 'Đã có lỗi xảy ra khi cập nhật chuyến bay! Vui lòng quay lại sau!'
                                 am_edit_msg = am_edit_msg
-
 
                 if 'isMedium' in request.form:
                     if 'number' in request.form:
@@ -279,21 +283,21 @@ class FlightManagementView(AuthenticatedModelView):
                             am_des = request.form[str_des]
                             am_ap = request.form[str_ap]
                             am_msg = dao.check_stop_station(am_name, am_stb, am_stf, airline,
-                                                              am_ap, model.id, stop_reg)
+                                                            am_ap, model.id, stop_reg)
                             if am_msg == 'success':
                                 try:
                                     dao.save_airport_medium(am_name, am_stb,
-                                                             am_stf, am_des,
-                                                             model.id, am_ap, stop_reg)
+                                                            am_stf, am_des,
+                                                            model.id, am_ap, stop_reg)
                                 except:
                                     dao.update_flight(model, old_model.id, old_model.name,
-                                                        old_model.departing_at, old_model.arriving_at,
-                                                        old_model.plane_id, old_airline)
+                                                      old_model.departing_at, old_model.arriving_at,
+                                                      old_model.plane_id, old_airline)
                                     am_msg = 'Đã có lỗi xảy ra khi lưu trạm dừng! Vui lòng quay lại sau!'
                             else:
                                 dao.update_flight(model, old_model.id, old_model.name,
-                                                    old_model.departing_at, old_model.arriving_at,
-                                                    old_model.plane_id, old_airline)
+                                                  old_model.departing_at, old_model.arriving_at,
+                                                  old_model.plane_id, old_airline)
                                 am_msg = am_msg
 
             if sts_msg == 'success':
@@ -346,7 +350,7 @@ class StatsView(AuthenticatedView):
         airline_name = request.args.get('airline_name')
         date = request.args.get('month')
         statistics = dao.statistic_revenue_follow_month(airline_name=airline_name,
-                                                          date=date)
+                                                        date=date)
         for s in statistics:
             if s[2]:
                 total = total + s[2]
@@ -359,6 +363,9 @@ class LogoutView(AuthenticatedView):
     def index(self):
         logout_user()
         return redirect(url_for("index"))
+
+    def is_accessible(self):
+        return current_user.is_authenticated
 
 
 admin.add_view(FlightManagementView(Flight, db.session, name="Quản lý chuyến bay", endpoint='flights'))
